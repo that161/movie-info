@@ -1,0 +1,76 @@
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+            <div class="card border-0 shadow rounded-3 my-5">
+                <div class="card-body p-4 p-sm-5">
+                    <h5 class="card-title text-center mb-3 fw-light fs-5">Sign
+                        Up</h5>
+                    <form method="post" action="/home">
+                        <div class="form-floating mb-1">
+                            <input type="text" class="form-control"
+                                id="username" name="username"
+                                placeholder="username">
+                            <label for="floatingInput">Username</label>
+                        </div>
+                        <div class="form-floating mb-1">
+                            <input type="password" class="form-control"
+                                id="password" name="password"
+                                placeholder="Password">
+                            <label for="floatingPassword">Password</label>
+                        </div>
+                        <hr class="my-4">
+                        <div class="d-grid">
+                            <button class="btn btn-primary btn-login
+                                text-uppercase fw-bold" type="button"
+                                name="signin" value="reg" id="signin"
+                                onclick="Submit()">Sign
+                                up</button>
+                        </div>
+                        <hr class="my-4">
+                        <div class="d-grid mb-2">
+                            <button class="btn btn-google btn-login
+                                text-uppercase fw-bold" type="button"
+                                onclick="SignIn()">
+                                <i class="fab fa-google me-2"></i> Sign in
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function SignIn() {
+        window.location.href = "http://localhost:20376/login";
+    }
+
+    async function PostDataAfterSubmit(url = '', data = {}) {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+        return response.json();
+    }
+
+    function Submit() {
+        let username = $('#username').val()
+        let password = $('#password').val()
+        let signin = $('#signin').val();
+        if (username == "" || password == "") {
+            alert("Vui lòng nhập đầy đủ thông tin")
+        } else {
+            PostDataAfterSubmit('/login', { username: username, password: password, signin: signin})
+                .then((data) => {
+                   alert(data.result); 
+                   window.location.href = "/login";
+                });
+
+        }
+
+    }
+</script>

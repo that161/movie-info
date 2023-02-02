@@ -1,0 +1,125 @@
+<div class="container">
+    <div class="alert alert-secondary text_cont background_cont" role="alert">
+        <div>
+            <div class="text_mv_info">Movies info</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <nav class="alert navbar" style="height: 40px">
+                <div class="container-fluid" style="margin-top: -11px">
+                    <a class="navbar-brand text_cont" onclick="ReturnHome()">Home</a>
+                    <button class="btn" style="margin-right:300px" onclick="Favorite()">List Favorite</button>
+                    <div>
+                        <input v-model="str" class="form-control me-2" type="search" placeholder="Search"
+                            aria-label="Search" id="input">
+                    </div>
+                    <div>
+                        <select class="form-select text-center" aria-label="Default select example" name="option">
+                            <option value="Search by movies">Search by movies</option>
+                            <option value="Search by casts">Search by casts</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button class="btn btn-outline-success" onclick="Search()">Search</button>
+                    </div>
+                    <div>
+                        <button class="btn btn-outline-success" name="signin" value="logout" id="signin"
+                            onclick="Logout()">Log out</button>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3 g-4 ">
+        {{#each movies}}
+        <div class="col">
+            <div class="card h-100">
+                <img src="{{img}}" alt="{{id}}" width="355" height="355" id="{{id}}" onclick="LoadMovie(id)">
+                <div>Title: {{title}}</div>
+                <div>Rating: {{rating}}</div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+    <div class="row" style="margin-top: 50px;">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                {{#each page}}
+                <li class="page-item"><a class="page-link" onclick="LoadPage({{npage}})">{{npage}}</a></li>
+                {{/each}}
+            </ul>
+
+        </nav>
+    </div>
+    <div class="alert alert-secondary text-center background_cont text_cont" style="margin-top:20px" role="alert">
+        Copyright &copy; &lt;TranVanThat&gt;
+    </div>
+</div>
+<script>
+    function ReturnHome() {
+        let id = $('#iduser').value;
+        console.log(id);
+        //window.location.href = `http://localhost:20376/home/iduser=${id}/page=1`
+    }
+
+    async function PostDataAfterSubmit(url = '', data = {}) {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+        return response.json();
+    }
+
+    function Search() {
+        let input = $('#input').val()
+        let option = $('.form-select').val()
+
+        if (input == "") {
+            alert("Vui lòng nhập đầy đủ thông tin")
+        } else {
+            PostDataAfterSubmit('/search', { input: input, option: option })
+                .then((data) => {
+                    if (data.result == "nodata") {
+                        alert("Không tìm thấy kết quả tìm kiếm")
+                    }
+                    else if (data.result == "success") {
+                        window.location.href = `http://localhost:20376/search/movie/${input}/page=1`;
+                    }
+                    else if (data.result == "ok") {
+                        window.location.href = `http://localhost:20376/search/cast/${input}/page=1`;
+                    }
+                });
+
+        }
+
+    }
+
+    function Logout() {
+        let signin = $('#signin').val()
+        PostDataAfterSubmit('/login', { signin: signin })
+            .then((data) => {
+                if (data.result == "logout successfully") {
+                    window.location.href = "http://localhost:20376/login"
+                }
+            });
+
+    }
+
+    function LoadMovie(id) {
+        window.location.href = `http://localhost:20376/movie/id=${id}`;
+    }
+
+    function LoadPage(page) {
+        window.location.href = `http://localhost:20376/home/page=${page}`;
+    }
+
+    function Favorite() {
+        window.location.href = "http://localhost:20376/favorite/page=1"
+    }
+
+</script>
